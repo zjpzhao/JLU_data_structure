@@ -1,4 +1,5 @@
 /*
+1-1
 1)创建单链表;
 2)插入操作:分别在当前结点后、表头、表尾插入值为 x 的结点;
 3)删除操作:分别删除表头结点、表尾结点和当前结点的后继结点;
@@ -53,6 +54,7 @@ public:
   int length();
   int change_curr(T dat);
   int change_all(T old,T dat);
+  int add_curr(T);
   vector<int> search(T dat);
 
 };
@@ -102,7 +104,7 @@ int List<T>::push_after_curr(T dat)
 {
   if(curr==NULL)
   {
-    cout<<"pointer curr remain unset"<<endl;
+    cout<<"当前curr指针为空"<<endl;
     return 1;
   }
   if(curr==last)
@@ -191,7 +193,7 @@ int List<T>::pop_after_curr()
     return 1;
   if(curr==last)
   {
-    cout<<"unable to pop after the last node"<<endl;
+    cout<<"不能删除最后一个节点之后的节点"<<endl;
     return 1;
   }
   size--;
@@ -263,7 +265,7 @@ int List<T>::show()
 {
   if(size==0)
   {
-    cout<<"empty list"<<endl;
+    cout<<"当前为空表"<<endl;
     head=last=curr=NULL;
     return 0;
   }
@@ -286,10 +288,10 @@ int List<T>::show_curr()
 {
   if(curr==NULL)
   {
-    cout<<"curr pointer remain unset"<<endl;
+    cout<<"当前curr指针为空"<<endl;
     return 1;
   }
-  cout<<"current data is "<<curr->data<<endl;
+  cout<<curr->data;
   return 0;
 }
 
@@ -315,6 +317,15 @@ int List<T>::change_all(T old,T dat)
       p->data=dat;
     p=p->next;
   }
+  return 0;
+}
+
+template<typename T>
+int List<T>::add_curr(T dat)   //在curr node 上加一个node,为了第二题的数据合并
+{
+  if(curr==NULL)
+    return 1;
+  curr->data=curr->data+dat;
   return 0;
 }
 
@@ -404,13 +415,14 @@ int main()
       if(s=="curr")
       {
         l.show_curr();
+        cout<<endl;
       }
       if(s=="k")
       {
         cin>>a;
         if(a>l.length()-1)
         {
-          cout<<"no such position as k"<<endl;
+          cout<<"表中没有k位置"<<endl;
           continue;
         }
         l.set_curr(a);
