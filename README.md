@@ -1,6 +1,7 @@
 # List
 吉林大学计算机系数据结构上机实验题,题解合辑
 
+发现任何bug或者使用中的问题,欢迎email davidparkerhl@gmail.com
 
 第一周:
 
