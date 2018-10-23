@@ -7,6 +7,7 @@
 */
 #include <iostream>
 #include <vector>
+#include <string>
 #define MAX_SIZE 200  //定义最大栈长度
 using namespace std;
 
