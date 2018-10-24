@@ -5,6 +5,8 @@
 3)删除操作:分别删除表头结点、表尾结点和当前结点的后继结点;
 4)存取操作:分别存取当前结点的值和单链表中第 k 个结点的值;
 5)查找操作:查找值为 x 的元素在单链表中出现的位置(是链表中的第几个元素)。
+
+todo:删除指定位置的节点
 */
 #include <iostream>
 #include <string>
@@ -427,6 +429,7 @@ int main()
         }
         l.set_curr(a);
         l.show_curr();
+        cout<<endl;
       }
     }
     if(s=="change")

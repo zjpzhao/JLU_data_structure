@@ -379,8 +379,6 @@ inline ostream& operator<< (ostream &os, const term &t)
 }
 int main()
 {
-  class term t(1,10);
-  cout<<t<<endl;
   List<term>l;
   int len,a,b;
   cout<<"请输入第一个多项式的长度"<<endl;
