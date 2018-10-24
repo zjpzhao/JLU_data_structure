@@ -21,15 +21,16 @@ inline int pow(int n)  //前n层有多少节点
     t*=2;
   return t-1;
 }
+
 template<typename T>
 class Node
 {
 public:
   T data;
-  Node<T>*lr[2];
+  Node<T>*lr[2];   //lr[0]左儿子,lr[1]右儿子
   Node<T>*fa;
   int dep,num;
-  Node(Node<T>* p,T dat,int depth,int number):fa(p),data(dat),dep(depth),num(number){lr[0]=lr[1]=fa=NULL;}
+  Node(Node<T>* p,T dat,int depth,int number):fa(p),data(dat),dep(depth),num(number){lr[0]=lr[1]=NULL;}
 };
 
 template<typename T>
@@ -44,14 +45,9 @@ class Btree
 public:
   Btree(){root=NULL,count=0;}
 
-  int build();  //根据模拟树形结构输入建树
-  int add(Node<T>*father,int lrt,T dat);  //最基础的add方法,根据指针和左右儿子添加节点
+  bool build();  //根据模拟树形结构输入建树
+  int add_p(Node<T>*father,int lrt,T dat);  //最基础的add方法,根据指针和左右儿子添加节点
   int add(int dep,int nth,T dat);   //根据满二叉树位置添加节点,第几层的第几个
-
-  int del(Node<T>*father);  //最基础的del方法,删除所有给定节点的子节点并修改其父节点指针
-  int del(int dep,int nth);  //删除指定满二叉树位置的节点
-  int del(T dat);   //删除所有相等的元素
-  int del_child(Node<T>*);
 
   int pre_order(Node<T>*p);
   int mid_order(Node<T>*p);
@@ -62,37 +58,48 @@ public:
 
 
   vector<Node<T>*> search(T dat);   //返回所有值相等的节点的指针
-  vector<Node<T>*> search(T low,T high);  //返回所有数据在范围内的节点
+  vector<Node<T>*> search(T low,T high);  //返回所有数据在范围内的节点,开区间
   int search(Node<T>*p,T dat);  //递归搜索子函数
   int search(Node<T>*p,T low,T high);
 
   Node<T>* go(int dep,int nth);   //返回实际该位置的节点的指针,没有为空
-  Node<T>* go(int num);           //返回编号为num的节点的指针
+  Node<T>* go(int num);           //返回编号为num的节点的指针,没有为空
+
+  Node<T>* get_root();
 };
 
+inline int ith(int n)
+{
+  return 1<<n;
+}
 template<typename T>
 bool Btree<T>::build()   //返回是否是满二叉树 true---是   false---不是
 {
-  int dep,unused;
-  bool flag=true;
-  T dat;
+  int dep;
+  bool flag=true;  //为满二叉树
+  T dat,unused;
   cout<<"输入树的最大深度和一个树中不存在的数"<<endl;
   cin>>dep>>unused;
   for(int i=1;i<=dep;i++)
-    for(int j=1;j<=(1<<(i-1));i++)
+    for(int j=1;j<=(1<<(i-1));j++)
     {
       cin>>dat;
       if(dat!=unused)
         add(i,j,dat);
       else
-        flag=false;
+        flag=false;   //不是满二叉树
     }
+  cout<<"建树完成,共添加 "<<count<<" 个节点"<<endl;
+  cout<<"该树";
+  if(!flag)
+    cout<<"不";
+  cout<<"是满二叉树"<<endl;
   return flag;
 }
 
 
 template<typename T>
-int Btree<T>::add(Node<T>*father,int lrt,T dat)  //0-l 1-r
+int Btree<T>::add_p(Node<T>*father,int lrt,T dat)  //0-l 1-r
 {
   if(lrt!=0&&lrt!=1)
     return 3;  //左右节点指定错误
@@ -101,8 +108,7 @@ int Btree<T>::add(Node<T>*father,int lrt,T dat)  //0-l 1-r
     if(count!=0||root!=NULL)
       return 1;
     count++;
-    Node<T>*p=new Node<T>(NULL,dat,1,1);
-    root=p;
+    root=new Node<T>(NULL,dat,1,1);
     return 0;
   }
   if(father->lr[lrt]!=NULL)  //要添加的节点非空
@@ -115,62 +121,24 @@ int Btree<T>::add(Node<T>*father,int lrt,T dat)  //0-l 1-r
 template<typename T>
 int Btree<T>::add(int dep,int nth,T dat)
 {
+  if(dep==1 && nth==1)
+  {
+    add_p(NULL,0,dat);
+    return 0;
+  }
   int num=pow(dep-1)+nth;
+
+/*
+  cout<<"++++++++++++++++++++++++"<<endl;
+  cout<<dep<<" "<<nth<<endl;
+  cout<<num<<endl;
+  cout<<"++++++++++++++++++++++++"<<endl;
+*/
   Node<T> *p=go(num/2);
   if(p==NULL)
     return 1;  //指定的位置没有有效父节点,空中楼阁
-  add(p,num%2,dat);
-  return 0;
-}
-
-template<typename T>
-int Btree<T>::del_child(Node<T> *p)   //删除给定节点的所有子节点
-{
-  if(p==NULL)
-    return 1;
-
-  p->father->lr[p->num%2]=NULL;
-  for(int i=0;i<=1;i++)
-    if(p->lr[i]!=NULL)
-      del(p->lr[i]);
-  for(int i=0;i<=1;i++)
-    if(p->lr[i]!=NULL)
-      delete p->lr[i],p->lr[i]=NULL,count--;
-  return 0;
-}
-
-template<typename T>
-int Btree<T>::del(Node<T> *p)
-{
-  if(p==NULL)
-    return 1;
-  del_child(p);
-  if(count==1)
-  {
-    count--,root=NULL;
-    delete p;
-  }
-  p->father->lr[p->num%2]=NULL;
-  delete p,count--;
-  return 0;
-}
-
-template<typename T>
-int Btree<T>::del(T dat)
-{
-  vector<Node<T>*>v=search(dat);
-  for(int i=0;i<v.size();i++)
-    del(v[i]);
-  return 0;
-}
-
-template<typename T>
-int Btree<T>::del(int dep,int nth)
-{
-  Node<T>*p=go(dep,nth);
-  if(p==NULL)
-    return 1;   //所指定的位置不存在
-  del(p);
+  //cout<<"+_+_+_"<<endl;
+  add_p(p,num%2,dat);
   return 0;
 }
 
@@ -205,26 +173,10 @@ int Btree<T>::mid_order(Node<T>*p)
   return 0;
 }
 
-
-template<typename T>
-int Btree<T>::show()
-{
-
-}
-
-template<typename T>
-int Btree<T>::show(Node<T>*p)
-{
-  if(p==NULL)
-    return 1;
-  cout<<p->data<<endl;
-  return 0;
-}
-
 template<typename T>
 vector<Node<T>*> Btree<T>::search(T dat)
 {
-  vp<T>->clear();
+  vp<T>.clear();
   search(root,dat);
   return vp<T>;
 }
@@ -245,7 +197,7 @@ int Btree<T>::search(Node<T>*p,T dat)
 template<typename T>
 vector<Node<T>*> Btree<T>::search(T low,T high)
 {
-  vp<T>->clear();
+  vp<T>.clear();
   search(root,low,high);
   return vp<T>;
 }
@@ -255,7 +207,7 @@ int Btree<T>::search(Node<T>*p,T low,T high)
 {
   if(p==NULL)
     return 1;
-  if(p->data>low && p->data<high)
+  if(p->data>=low && p->data<=high)
     vp<T>.push_back(p);
   for(int i=0;i<=1;i++)
     if(p->lr[i]!=NULL)
@@ -281,8 +233,85 @@ Node<T>* Btree<T>::go(int dep,int nth)
   return go(num);
 }
 
+
+template<typename T>
+Node<T>* Btree<T>::get_root()
+{
+  return root;
+}
+
 int main()
 {
-  cout<<pow(3)<<endl;
+  class Btree<char> tree;
+  tree.build();
+  string s;
+  while(cin>>s)
+  {
+    if(s=="show")
+    {
+      cin>>s;
+      if(s=="pre")
+        tree.pre_order(tree.get_root());
+      if(s=="mid")
+        tree.mid_order(tree.get_root());
+      if(s=="post")
+        tree.post_order(tree.get_root());
+      cout<<endl;
+    }
+    if(s=="search")
+    {
+      cin>>s;
+      if(s=="father")
+      {
+        cin>>s;
+        if(s=="pos")
+        {
+          int dep,nth;
+          cin>>dep>>nth;
+          if(dep==1&&nth==1)
+          {
+            cout<<"根节点不存在父节点"<<endl;
+          }
+          int num=pow(dep-1)+nth;
+          num=num/2;
+          Node<char>*p=tree.go(num);
+          if(p==NULL)
+          {
+            cout<<"指定的节点不存在"<<endl;
+            continue;
+          }
+          else
+            cout<<"[ "<<p->num<<" 号 "<<p->data<<" ] "<<endl;
+        }
+
+        if(s=="val")
+        {
+          cout<<"in"<<endl;
+          char val;
+          cin>>val;
+          vector<Node<char>*> v=tree.search(val);
+          if(v.empty())
+            cout<<"树中不存在为该值的节点";
+          for(int i=0;i<v.size();i++)
+            if(v[i]->fa==NULL)
+              cout<<" [根节点符合条件但是没有父节点] ";
+            else
+              cout<<" [ "<<v[i]->fa->num<<" 号 "<<v[i]->fa->data<<" ] ";
+          cout<<endl;
+        }
+      }
+      if(s=="range")
+      {
+        char low,high;
+        cin>>low>>high;
+        vector<Node<char>*> v=tree.search(low,high);
+        for(int i=0;i<v.size();i++)
+          cout<<"[ "<<v[i]->num<<" 号 "<<v[i]->data<<" ] ";
+        cout<<endl;
+      }
+    }
+  }
+
+  return 0;
 
 }
