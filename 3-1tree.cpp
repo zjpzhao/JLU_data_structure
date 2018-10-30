@@ -10,6 +10,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
 
@@ -79,7 +80,7 @@ bool Btree<T>::build()   //返回是否是满二叉树 true---是   false---不�
   int dep;
   bool flag=true;  //为满二叉树
   T dat,unused;
-  cout<<"输入树的最大深度和一个树中不存在的数"<<endl;
+  cout<<"输入树的最大深度和一个树中不存在的数据"<<endl;
   cin>>dep>>unused;
   for(int i=1;i<=dep;i++)
     for(int j=1;j<=(1<<(i-1));j++)
@@ -241,6 +242,12 @@ Node<T>* Btree<T>::get_root()
   return root;
 }
 
+
+inline bool cmp(const Node<char>*a,const Node<char>*b)
+{
+  return a->num<b->num;
+}
+
 int main()
 {
   class Btree<char> tree;
@@ -287,7 +294,6 @@ int main()
 
         if(s=="val")
         {
-          cout<<"in"<<endl;
           char val;
           cin>>val;
           vector<Node<char>*> v=tree.search(val);
@@ -297,7 +303,12 @@ int main()
             if(v[i]->fa==NULL)
               cout<<" [根节点符合条件但是没有父节点] ";
             else
-              cout<<" [ "<<v[i]->fa->num<<" 号 "<<v[i]->fa->data<<" ] ";
+            {
+              int temp=1;
+              while(pow(temp)<v[i]->fa->num)
+                temp++;
+              cout<<" [ 第 "<<temp<<" 行,第 "<<v[i]->fa->num-pow(temp-1)<<" 个节点,数据为 "<<v[i]->fa->data<<" ] "<<endl;
+            }
           cout<<endl;
         }
       }
@@ -306,8 +317,14 @@ int main()
         char low,high;
         cin>>low>>high;
         vector<Node<char>*> v=tree.search(low,high);
+        sort(v.begin(),v.end(),cmp);
         for(int i=0;i<v.size();i++)
-          cout<<"[ "<<v[i]->num<<" 号 "<<v[i]->data<<" ] ";
+        {
+          int temp=1;
+          while(pow(temp)<v[i]->num)
+            temp++;
+          cout<<" [ 第 "<<temp<<" 行,第 "<<v[i]->num-pow(temp-1)<<" 个节点,数据为 "<<v[i]->data<<" ] "<<endl;
+        }
         cout<<endl;
       }
     }
