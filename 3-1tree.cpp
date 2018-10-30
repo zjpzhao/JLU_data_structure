@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <fstream>
 using namespace std;
 
 
@@ -43,10 +44,11 @@ template<typename T>
 class Btree
 {
   Node<T>*root;
-  int count;
+  int count,dep;
 public:
-  Btree(){root=NULL,count=0;}
+  Btree(){root=NULL,count=0,dep=0;}
 
+  void load();
   bool build();  //根据模拟树形结构输入建树
   bool build_seq();  //根据遍历输入
 
@@ -59,6 +61,7 @@ public:
 
   int show();   //树形打印
   int show(Node<T>*p);  //显示该指针指向的数据
+  int show_file();
 
 
   vector<Node<T>*> search(T dat);   //返回所有值相等的节点的指针
@@ -70,25 +73,106 @@ public:
   Node<T>* go(int num);           //返回编号为num的节点的指针,没有为空
 
   Node<T>* get_root();
+
+  int set_dep(int n);
 };
 
-inline int ith(int n)
+int ith(int n)
 {
+  if(n<0)
+    return 0;
   return 1<<n;
 }
+
+void space(int t)
+{
+  for(int i=0;i<t;i++)
+    cout<<" ";
+}
+
+template<typename T>
+int Btree<T>::show()
+{
+  for(int i=1;i<=dep;i++)
+  {
+    space(ith(dep-i)-1);
+    for(int j=1;j<=ith(i-1);j++)
+    {
+      Node<T>*p=go(i,j);
+      if(p==NULL)
+        cout<<" ";
+      else
+        cout<<p->data;
+      if(j!=ith(i-1))
+        space(ith(dep-i+1)-1);
+    }
+    space(ith(dep-i)-1);
+    cout<<endl;
+  }
+  return 0;
+}
+
+template<typename T>
+int Btree<T>::show_file()
+{
+  freopen("/Users/davidparker/desktop/tree.out","w",stdout);
+  cout<<dep<<endl;
+  for(int i=1;i<=dep;i++)
+  {
+    space(ith(dep-i)-1);
+    for(int j=1;j<=ith(i-1);j++)
+    {
+      Node<T>*p=go(i,j);
+      if(p==NULL)
+        cout<<"/";
+      else
+        cout<<p->data;
+      if(j!=ith(i-1))
+        space(ith(dep-i+1)-1);
+    }
+    space(ith(dep-i)-1);
+    cout<<endl;
+  }
+  cout<<"   "<<endl;
+
+  fclose(stdout);
+  return 0;
+}
+
+template<typename T>
+void Btree<T>::load()
+{
+  freopen("/Users/davidparker/desktop/tree.out","r",stdin);
+  freopen("/Users/davidparker/desktop/temp","w",stdout);
+  cout<<"in"<<endl;
+  build();
+  cout<<"out"<<endl;
+  show();
+}
+
+template<typename T>
+int Btree<T>::set_dep(int t)
+{
+  dep=t;
+  return 0;
+}
+
+
+
 template<typename T>
 bool Btree<T>::build()   //返回是否是满二叉树 true---是   false---不是
 {
   int dep;
   bool flag=true;  //为满二叉树
-  T dat,unused;
-  cout<<"输入树的最大深度和一个树中不存在的数据"<<endl;
-  cin>>dep>>unused;
+  T dat;
+  cout<<"输入树的最大深度"<<endl;
+  cin>>dep;
+  set_dep(dep);
   for(int i=1;i<=dep;i++)
     for(int j=1;j<=(1<<(i-1));j++)
     {
       cin>>dat;
-      if(dat!=unused)
+      if(dat!='/')
         add(i,j,dat);
       else
         flag=false;   //不是满二叉树
@@ -103,11 +187,14 @@ bool Btree<T>::build()   //返回是否是满二叉树 true---是   false---不�
 
 
 /*
-abd#e###c##
+12#45##6##3#7
+1#2345####6#7#8##
 */
 template<typename T>
 bool Btree<T>::build_seq()
 {
+  cout<<"输入二叉树的带终止符前序遍历"<<endl;
+  int dep=0;
   string str;
   vector<Node<T>*>v;
   bool isright=false;
@@ -119,6 +206,10 @@ bool Btree<T>::build_seq()
 
   for(int i=1;i<str.size();i++)
   {
+    dep=dep>v.size()?dep:v.size();
+    while(v.back()->lr[1]!=NULL)
+      v.pop_back();
+
     if(str[i]=='#')
     {
       if(isright)
@@ -128,8 +219,11 @@ bool Btree<T>::build_seq()
       continue;
     }
     v.push_back(add_p(v.back(),isright,str[i]));
+    if(isright)
+      isright=!isright;
   }
-  return 0;
+  set_dep(dep);
+  return pow(dep)==count;
 }
 
 template<typename T>
@@ -251,6 +345,8 @@ Node<T>* Btree<T>::go(int num)
   if(num==1)
     return root;
   Node<T>*p=go(num/2);
+  if(p==NULL)
+    return NULL;
   return p->lr[num%2];
 }
 
@@ -286,8 +382,14 @@ int main()
       if(s=="tree")
         tree.build();
       if(s=="seq")
-        tree.build_seq();
+        if(tree.build_seq())
+          cout<<"该二叉树是满二叉树"<<endl;
+        else
+          cout<<"该二叉树不是满二叉树"<<endl;
     }
+    if(s=="load")
+      tree.load();
+
     if(s=="show")
     {
       cin>>s;
@@ -297,6 +399,10 @@ int main()
         tree.mid_order(tree.get_root());
       if(s=="post")
         tree.post_order(tree.get_root());
+      if(s=="tree")
+        tree.show();
+      if(s=="file")
+        tree.show_file();
       cout<<endl;
     }
     if(s=="search")
@@ -361,6 +467,7 @@ int main()
         cout<<endl;
       }
     }
+
   }
 
   return 0;
