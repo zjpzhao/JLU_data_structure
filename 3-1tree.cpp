@@ -48,7 +48,9 @@ public:
   Btree(){root=NULL,count=0;}
 
   bool build();  //根据模拟树形结构输入建树
-  int add_p(Node<T>*father,int lrt,T dat);  //最基础的add方法,根据指针和左右儿子添加节点
+  bool build_seq();  //根据遍历输入
+
+  Node<T>* add_p(Node<T>*father,int lrt,T dat);  //最基础的add方法,根据指针和左右儿子添加节点
   int add(int dep,int nth,T dat);   //根据满二叉树位置添加节点,第几层的第几个
 
   int pre_order(Node<T>*p);
@@ -100,24 +102,54 @@ bool Btree<T>::build()   //返回是否是满二叉树 true---是   false---不�
 }
 
 
+/*
+abd#e###c##
+*/
 template<typename T>
-int Btree<T>::add_p(Node<T>*father,int lrt,T dat)  //0-l 1-r
+bool Btree<T>::build_seq()
+{
+  string str;
+  vector<Node<T>*>v;
+  bool isright=false;
+  cin>>str;
+
+  count++;
+  root=new Node<T>(NULL,str[0],1,1);
+  v.push_back(root);
+
+  for(int i=1;i<str.size();i++)
+  {
+    if(str[i]=='#')
+    {
+      if(isright)
+        v.pop_back(),isright=true;
+      else
+        isright=!isright;
+      continue;
+    }
+    v.push_back(add_p(v.back(),isright,str[i]));
+  }
+  return 0;
+}
+
+template<typename T>
+Node<T>* Btree<T>::add_p(Node<T>*father,int lrt,T dat)  //0-l 1-r
 {
   if(lrt!=0&&lrt!=1)
-    return 3;  //左右节点指定错误
+    return NULL;  //左右节点指定错误
   if(father==NULL)   //插入根节点
   {
     if(count!=0||root!=NULL)
-      return 1;
+      return NULL;
     count++;
     root=new Node<T>(NULL,dat,1,1);
-    return 0;
+    return root;
   }
   if(father->lr[lrt]!=NULL)  //要添加的节点非空
-    return 2;
+    return NULL;
   count++;
   father->lr[lrt]=new Node<T>(father,dat,father->dep+1,father->num*2+lrt);
-  return 0;
+  return father->lr[lrt];
 }
 
 template<typename T>
@@ -130,12 +162,6 @@ int Btree<T>::add(int dep,int nth,T dat)
   }
   int num=pow(dep-1)+nth;
 
-/*
-  cout<<"++++++++++++++++++++++++"<<endl;
-  cout<<dep<<" "<<nth<<endl;
-  cout<<num<<endl;
-  cout<<"++++++++++++++++++++++++"<<endl;
-*/
   Node<T> *p=go(num/2);
   if(p==NULL)
     return 1;  //指定的位置没有有效父节点,空中楼阁
@@ -251,10 +277,17 @@ inline bool cmp(const Node<char>*a,const Node<char>*b)
 int main()
 {
   class Btree<char> tree;
-  tree.build();
   string s;
   while(cin>>s)
   {
+    if(s=="build")
+    {
+      cin>>s;
+      if(s=="tree")
+        tree.build();
+      if(s=="seq")
+        tree.build_seq();
+    }
     if(s=="show")
     {
       cin>>s;
