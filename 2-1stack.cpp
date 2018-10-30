@@ -33,38 +33,31 @@ template<typename T>
 int Stack<T>::push(T dat)
 {
   if(full())
-  {
-    cout<<"当前栈已满,pop或者增加栈容量重试"<<endl;
-    return 1;
-  }
+    return 1;  //当前栈已满,pop或者增加栈容量重试
   last++;
   data[last]=dat;
   return 0;
 }
+
 template<typename T>
 int Stack<T>::pop()
 {
   if(empty())
-  {
-    cout<<"空栈无法执行退栈操作"<<endl;
-    return 1;
-  }
+    return 1; //空栈无法执行退栈操作
   last--;
   return 0;
 }
+
 template<typename T>
 vector<T> Stack<T>::read()
 {
   vector<T>v;
   if(empty())
-  {
-    cout<<"空栈无法执行取栈顶操作"<<endl;
-    return v;
-  }
-  cout<<data[last];
+    return v; //空栈无法执行取栈顶操作
   v.push_back(data[last]);
   return v;
 }
+
 template<typename T>
 int Stack<T>::size()
 {
@@ -101,6 +94,7 @@ int Stack<T>::show()
 int main()
 {
   class Stack<char> s;
+  int ret=0;
   string cmd;
   while(cin>>cmd)
   {
@@ -108,16 +102,24 @@ int main()
     {
       char dat;
       cin>>dat;
-      s.push(dat);
+      ret=s.push(dat);
+      if(ret==1)
+        cout<<"当前栈已满,pop或者增加栈容量重试"<<endl;
     }
     if(cmd=="pop")
     {
-      s.pop();
+      ret=s.pop();
+      if(ret==1)
+      cout<<"空栈无法执行退栈操作"<<endl;
     }
     if(cmd=="read")
     {
       cout<<"                 ";
-      s.read();
+      vector<char>v=s.read();
+      if(v.empty())
+        cout<<endl<<"空栈无法执行取栈顶操作";
+      else
+        cout<<v[0];
       cout<<endl;
     }
     s.show();
