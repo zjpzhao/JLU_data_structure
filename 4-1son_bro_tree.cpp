@@ -34,7 +34,7 @@ class Tree
   Node<T>*root;   //根节点深度是1
   int count;     //所有的节点的总数
 public:
-  Tree(){root=NULL,count=0;}
+  Tree(){root=new Node<T>(' ',0,0,0),count=0;}
 
   int add();   //根据输入新建一棵树(第一棵树的兄弟连着第二棵树,森林都是一棵树)
   int add(T dat);    //添加第一个节点
@@ -64,12 +64,12 @@ template<typename T>
 int Tree<T>::add(T dat)   //添加第一个节点
 {
   count++;
-  if(root==NULL&&count==1)
+  if(count==1)
   {
-    root=new Node<T>(dat,1,1,count);
+    root->son=new Node<T>(dat,1,1,count);
     return 0;
   }
-  Node<T>*p=root;
+  Node<T>*p=root->son;
   int t=1;
   while(p->bro!=NULL)
     p=p->bro,t++;
@@ -104,34 +104,29 @@ int Tree<T>::add()
   int n_depth;
   char dat;
   bool flag;
+  cout<<"输入树的深度"<<endl;
   cin>>n_depth;
   cin>>dat;
   add(dat);
   for(int i=2;i<=n_depth;i++)
   {
-    cout<<i<<"+_+"<<endl;
     flag=false;
     int nth=0,nfa=1;
     while(cin>>dat)
     {
-      cout<<dat<<"___"<<endl;
       if(dat=='/')
       {
         nfa++;
         continue;
       }
       if(dat=='|')
-      {
-        flag=true;
         break;
-      }
       nth++;
       Node<T>*p=go(i-1,nfa);
       add(p,dat,nth);
     }
-    if(flag)
-      continue;
   }
+  cout<<"目前共"<<count<<"个节点"<<endl;
   return 0;
 }
 
@@ -166,9 +161,11 @@ int Tree<T>::pre_r(Node<T>* p)
 
   cout<<p->data<<" ";
   if(p->son!=NULL)
+  {
     p=p->son;
-  while(p!=NULL)
-    pre_r(p),p=p->bro;
+    while(p!=NULL)
+      pre_r(p),p=p->bro;
+  }
   return 0;
 }
 
@@ -179,11 +176,14 @@ int Tree<T>::post_r(Node<T>* p)
     return 1;
   if(count==0)
     return 2;
+  Node<T>*t=p;
   if(p->son!=NULL)
+  {
     p=p->son;
-  while(p!=NULL)
-    post_r(p),p=p->bro;
-  cout<<p->data<<" ";
+    while(p!=NULL)
+      post_r(p),p=p->bro;
+  }
+  cout<<t->data<<" ";
   return 0;
 }
 
@@ -196,6 +196,14 @@ int Tree<T>::pre_i()
   v.push_back(root);
   while(!v.empty())
   {
+    /*
+    cout<<"___________"<<endl;
+    for(int i=0;i<v.size();i++)
+      cout<<v[i]->data<<" ";
+    cout<<endl;
+    cout<<"___________"<<endl;
+    */
+
     Node<T>* temp=v.back();
     cout<<temp->data<<" ";
     v.pop_back();
@@ -223,13 +231,25 @@ int Tree<T>::post_i()
   while(!v.empty())
   {
     Node<T>*p=v.back();
+    v.pop_back();
+    in[p->num]++;
+
+    /*
+    cout<<endl<<"___________"<<endl;
+    for(int i=0;i<v.size();i++)
+      cout<<v[i]->data<<" ";
+    cout<<endl;
+    cout<<p->data<<endl;
+    cout<<in[p->num]<<endl;
+    cout<<"___________"<<endl;
+    */
+
     if(p->son==NULL)   //如果没有子节点肯定是要输出的
     {
       cout<<p->data<<" ";
-      v.pop_back();
+      continue;
     }
     Node<T>*t=p->son;
-    in[p->num]++;
 
     for(int i=1;i<in[p->num];i++)
       t=t->bro;
@@ -237,12 +257,9 @@ int Tree<T>::post_i()
     if(t==NULL)
       cout<<p->data<<" ";
     else
-    {
-      v.pop_back();
-      v.push_back(p);
-      v.push_back(t);
-    }
+      v.push_back(p),v.push_back(t);
   }
+  //cout<<"hooray"<<endl;
   return 0;
 }
 
@@ -252,7 +269,7 @@ int Tree<T>::show_layer()
   if(count==0)
     return 1;
   queue<Node<T>*>q;
-  Node<T>*p=root;
+  Node<T>*p=root->son;
   while(p!=NULL)
     q.push(p),p=p->bro;
   while(!q.empty())
@@ -264,6 +281,7 @@ int Tree<T>::show_layer()
       while(p!=NULL)
         q.push(p),p=p->bro;
     }
+    q.pop();
   }
   return 0;
 }
@@ -286,18 +304,25 @@ int main()
       if(s=="pre")
       {
         tree.pre_i();
-        cout<<"_________"<<endl;
+        cout<<endl;
         tree.pre_r(tree.root_p());
+        cout<<endl;
       }
       if(s=="post")
       {
         tree.post_i();
+        cout<<endl;
         tree.post_r(tree.root_p());
+        cout<<endl;
       }
       if(s=="layer")
+      {
         tree.show_layer();
+        cout<<endl;
+      }
+
     }
-    cout<<"+_+"<<endl;
   }
+
   return 0;
 }
