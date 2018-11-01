@@ -34,9 +34,9 @@ class Tree
   Node<T>*root;   //根节点深度是1
   int count;     //所有的节点的总数
 public:
-  Tree(){root=new Node<T>(' ',0,0,0),count=0;}
+  Tree(){root=new Node<T>(NULL,0,0,0);count=0;}
 
-  int add();   //根据输入新建一棵树(第一棵树的兄弟连着第二棵树,森林都是一棵树)
+  int add(int t_count);   //根据输入新建一棵树(第一棵树的兄弟连着第二棵树,森林都是一棵树)
   int add(T dat);    //添加第一个节点
   int add(Node<T>* father,T dat,int nth);  //插入为最后一个子节点
 
@@ -48,7 +48,7 @@ public:
 
   int show_layer();   //按层顺序输出
 
-  Node<T>* go(int dep,int nth);
+  Node<T>* go(int t_count,int dep,int nth);
 
   Node<T>* root_p();
 
@@ -66,14 +66,15 @@ int Tree<T>::add(T dat)   //添加第一个节点
   count++;
   if(count==1)
   {
+    root->num_son++;
     root->son=new Node<T>(dat,1,1,count);
     return 0;
   }
   Node<T>*p=root->son;
-  int t=1;
+  root->num_son++;
   while(p->bro!=NULL)
-    p=p->bro,t++;
-  p->bro=new Node<T>(dat,1,t,count);
+    p=p->bro;
+  p->bro=new Node<T>(dat,1,1,count);
   return 0;
 }
 
@@ -83,6 +84,10 @@ int Tree<T>::add(Node<T> *father,T dat,int nth)   //添加的都是第二层以�
 {
   if(father==NULL)
     return 1;
+
+  cout<<endl<<"+++"<<endl;
+  cout<<dat;
+  cout<<endl<<"+++"<<endl;
 
   count++,father->num_son++;
   Node<T>*p=new Node<T>(dat,father->dep+1,nth,count);
@@ -99,8 +104,9 @@ int Tree<T>::add(Node<T> *father,T dat,int nth)   //添加的都是第二层以�
 }
 
 template<typename T>
-int Tree<T>::add()
+int Tree<T>::add(int t_count)
 {
+  cout<<t_count<<"+_+"<<endl;
   int n_depth;
   char dat;
   bool flag;
@@ -122,7 +128,16 @@ int Tree<T>::add()
       if(dat=='|')
         break;
       nth++;
-      Node<T>*p=go(i-1,nfa);
+
+      //freopen("/Users/davidparker/desktop/text.out","w",stdout);
+
+      //fclose(stdout);
+
+      Node<T>*p=go(t_count,i-1,nfa);
+      cout<<"___________"<<endl;
+      cout<<t_count<<" "<<i-1<<" "<<nfa<<" "<<p<<endl;
+
+      cout<<"___________"<<endl;
       add(p,dat,nth);
     }
   }
@@ -131,10 +146,13 @@ int Tree<T>::add()
 }
 
 template<typename T>
-Node<T>* Tree<T>::go(int dep,int nth)
+Node<T>* Tree<T>::go(int tree,int dep,int nth)
 {
   queue<Node<T>*> q;
-  q.push(root);
+  Node<T>*p=root->son;
+  for(int i=1;i<tree;i++)
+    p=p->bro;
+  q.push(p);
   while(!q.empty())
   {
     if(q.front()->dep==dep && q.front()->nth==nth)
@@ -159,7 +177,17 @@ int Tree<T>::pre_r(Node<T>* p)
   if(count==0)
     return 2;
 
+  /*
+  cout<<"___________"<<endl;
+  cout<<p<<endl;
   cout<<p->data<<" ";
+  cout<<p->son<<endl;
+  cout<<p->bro<<endl;
+  cout<<p->dep<<" "<<p->nth<<endl;
+  cout<<"___________"<<endl;
+  */
+  cout<<p->data<<" ";
+
   if(p->son!=NULL)
   {
     p=p->son;
@@ -259,7 +287,6 @@ int Tree<T>::post_i()
     else
       v.push_back(p),v.push_back(t);
   }
-  //cout<<"hooray"<<endl;
   return 0;
 }
 
@@ -268,12 +295,15 @@ int Tree<T>::show_layer()
 {
   if(count==0)
     return 1;
+  int pre=1;
   queue<Node<T>*>q;
   Node<T>*p=root->son;
   while(p!=NULL)
     q.push(p),p=p->bro;
   while(!q.empty())
   {
+    if(q.front()->dep!=pre)
+      cout<<endl,pre=q.front()->dep;
     cout<<q.front()->data<<" ";
     if(q.front()->son!=NULL)
     {
@@ -291,12 +321,13 @@ int main()
   string s;
   int temp,ret;
   char dat;
+  int t_count=1;
   class Tree<char> tree;
   while(cin>>s)
   {
     if(s=="add")
     {
-      tree.add();
+      tree.add(t_count++);
     }
     if(s=="show")
     {
