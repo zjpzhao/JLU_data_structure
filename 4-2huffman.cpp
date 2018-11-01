@@ -2,8 +2,10 @@
 #include <vector>
 #include <queue>
 #include <algorithm>
+
 using namespace std;
 double freq[300];
+string* code[300];
 int check_freq()
 {
   freopen("/Users/davidparker/desktop/text.in","r",stdin);
@@ -38,7 +40,14 @@ public:
   int merge(Tree*);
   double get_cost();
   int show_pre(Node*);
+  int encode(Node *,string path);
+  Node* get_root();
 };
+
+Node* Tree::get_root()
+{
+  return root;
+}
 
 int Tree::merge(Tree*b)
 {
@@ -81,12 +90,64 @@ int Tree::show_pre(Node*p)
   return 0;
 }
 
+vector<string> v;
+int Tree::encode(Node* p,string path)
+{
+  cout<<"______"<<endl;
+  cout<<p->data<<endl;
+  cout<<path<<endl;
+  cout<<"______"<<endl;
+  if(p==NULL)
+    return 1;
+  if(p->data!=NULL)
+    code[p->data]=new string(path);
+  for(int i=0;i<=1;i++)
+    if(p->lrp[i]!=NULL)
+    {
+      path.push_back(48+i);
+      encode(p->lrp[i],path);
+      path.pop_back();
+    }
+  path.pop_back();
+  return 0;
+}
+
 inline bool cmp(Tree* a,Tree *b)
 {
   return a->cost > b->cost;
 }
 
+inline int compress()
+{
+  freopen("/Users/davidparker/desktop/text.in","r",stdin);
+  freopen("/Users/davidparker/desktop/compressed.out","w",stdout);
+  char t;
+  while((t=getchar())!=EOF)
+  {
+    cout<<*code[t];
+  }
+  fclose(stdin);
+  fclose(stdout);
+}
 
+inline int decompress(Tree* tree)
+{
+  freopen("/Users/davidparker/desktop/compressed.out","r",stdin);
+  freopen("/Users/davidparker/desktop/decompressed.out","w",stdout);
+  char t;
+  Node*p=tree->get_root();
+  while((t=getchar())!=EOF)
+  {
+    //cout<<"++"<<t<<"--"<<endl;
+    p=p->lrp[t-'0'];
+    if(p->data!=NULL)
+      cout<<p->data,p=tree->get_root();
+  }
+
+  fclose(stdin);
+  fclose(stdout);
+  return 0;
+}
 int main()
 {
   vector<Tree*>v;
@@ -108,5 +169,11 @@ int main()
     v.back()->get_cost();
   }
   v[0]->show_pre(v[0]->root);
+  Tree* tree=v[0];
+  string s;
+  tree->encode(tree->get_root(),"");
+
+  compress();
+  decompress(tree);
   return 0;
 }
