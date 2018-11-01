@@ -2,6 +2,7 @@
 吉林大学计算机系数据结构上机实验题,题解合辑
 
 发现任何bug或者使用中的问题,欢迎email davidparkerhl@gmail.com
+pdf题目下载链接:https://pan.baidu.com/s/1b9uJZUcrhpMXJi3xag5eew
 
 编写基本原则:
 除了进行函数传参之外,关键数据结构不使用任何c++ stl模板
