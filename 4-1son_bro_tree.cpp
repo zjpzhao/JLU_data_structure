@@ -84,11 +84,6 @@ int Tree<T>::add(Node<T> *father,T dat,int nth)   //添加的都是第二层以�
 {
   if(father==NULL)
     return 1;
-
-  cout<<endl<<"+++"<<endl;
-  cout<<dat;
-  cout<<endl<<"+++"<<endl;
-
   count++,father->num_son++;
   Node<T>*p=new Node<T>(dat,father->dep+1,nth,count);
   if(father->son==NULL)
@@ -106,7 +101,6 @@ int Tree<T>::add(Node<T> *father,T dat,int nth)   //添加的都是第二层以�
 template<typename T>
 int Tree<T>::add(int t_count)
 {
-  cout<<t_count<<"+_+"<<endl;
   int n_depth;
   char dat;
   bool flag;
@@ -134,10 +128,6 @@ int Tree<T>::add(int t_count)
       //fclose(stdout);
 
       Node<T>*p=go(t_count,i-1,nfa);
-      cout<<"___________"<<endl;
-      cout<<t_count<<" "<<i-1<<" "<<nfa<<" "<<p<<endl;
-
-      cout<<"___________"<<endl;
       add(p,dat,nth);
     }
   }
@@ -357,3 +347,4 @@ int main()
 
   return 0;
 }
+//https://www.tensorflow.org/tutorials/keras/basic_classification

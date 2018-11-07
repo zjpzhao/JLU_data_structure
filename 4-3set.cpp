@@ -7,11 +7,7 @@ int fa(int t)
     return t;
   return father[t]=fa(father[t]);
 }
-int set_fa(int fath,int son)
-{
-  father[fa(son)]=fa(fath);
-  return 0;
-}
+
 int main()
 {
   for(int i=0;i<=256;i++)
@@ -25,18 +21,17 @@ int main()
     {
       if(t2=='|')
         break;
-      set_fa(t1,t2);
+      father[fa(t1)]=fa(t2);
     }
-
   }
-  cout<<"here"<<endl;
+  cout<<"集合创建完毕"<<endl;
   string s;
   while(cin>>s)
   {
     if(s=="union")
     {
       cin>>t1>>t2;
-      set_fa(t1,t2);
+      father[fa(t1)]=fa(t2);
     }
     if(s=="search")
     {
@@ -48,9 +43,12 @@ int main()
     }
     if(s=="quit")
       break;
-    for(int i='a';i<='z';i++)
-      cout<<father[i]<<" ";
-    cout<<endl;
+    if(s=="show")
+    {
+      for(int i='a';i<='n';i++)
+        cout<<father[i]<<" ";
+      cout<<endl;
+    }
   }
   return 0;
 }
