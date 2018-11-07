@@ -347,4 +347,3 @@ int main()
 
   return 0;
 }
-//https://www.tensorflow.org/tutorials/keras/basic_classification
