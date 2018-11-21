@@ -162,6 +162,8 @@ bool Graph::test(int from,int to)
 {
   if(from>99 || to>99)
 		return false;
+  for(int i=1;i<=99;i++)
+    in[i]=false;
 	queue<int>q;
 	q.push(from);
 	while(!q.empty())

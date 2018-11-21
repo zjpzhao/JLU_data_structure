@@ -10,7 +10,13 @@ Cmax = 1+2+...+(n-1) = n*(n-1)/2 = O(n2) 此时最好时间复杂为O(n2)
 
 */
 #include <iostream>
+#include <time.h>
+#include <chrono>
+
+
+
 using namespace std;
+int times;
 void qsort(int a[],int low,int high)
 {
   if(low>=high)
@@ -19,10 +25,10 @@ void qsort(int a[],int low,int high)
   while(left<right)
   {
     while(left<right && a[right]>=mid)
-      right--;
+      right--,times++;
     a[left]=a[right];
     while(left<right && a[left]<=mid)
-      left++;
+      left++,times++;
     a[right]=a[left];
   }
   a[left]=mid;
@@ -30,16 +36,43 @@ void qsort(int a[],int low,int high)
   qsort(a,right+1,high);
   return;
 }
+
+
 int main()
 {
-  int n;
+
+  int n,a[900000];
+  int tot_times;
   cin>>n;
-  int a[100000];
-  for(int i=0;i<n;i++)
-    cin>>a[i];
-  qsort(a,0,n-1);
-  for(int i=0;i<n;i++)
-    cout<<a[i]<<" ";
-  cout<<endl;
+  freopen("/Users/davidparker/desktop/sort.out","w",stdout);
+
+  for(int k=1;k<=10;k++)
+  {
+    times=0;
+    cout<<"##################################"<<endl;
+
+
+    for(int i=1;i<=n;i++)
+      cout<<(a[i]=( rand()%1000000+10 ) )<<" ";
+    cout<<endl;
+
+    cout<<"____________________"<<endl;
+
+    clock_t start=clock();
+    qsort(a,0,n-1);
+    cout<<"+_+"<<(clock()-double(start))/CLOCKS_PER_SEC<<endl;
+
+
+    for(int i=1;i<=n;i++)
+      cout<<a[i]<<" ";
+    cout<<endl;
+
+    tot_times+=times;
+    cout<<"共进行  "<<times<<"  次比较"<<endl;
+
+
+  }
+
+  cout<<endl<<endl<<"平均进行  "<<tot_times/10<<"  次比较"<<endl;
   return 0;
 }

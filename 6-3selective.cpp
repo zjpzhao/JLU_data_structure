@@ -2,47 +2,31 @@
 #include <time.h>
 using namespace std;
 int times;
-inline void swap(int *a,int *b)
+void select_sort(int a[],int n)
 {
-  *a+=*b,*b=*a-*b,*a=*a-*b;
-  times++;
-}
-void adj(int num[],int fa,int end)
-{
-  int son=fa*2;
-  while(son<=end)
-  {
-    if(son+1<=end && num[son+1]>num[son])
-      son++;
-    if(num[fa]<num[son])
-    {
-      swap(num+fa,num+son);
-      fa=son,son=fa*2;
+	int i,j,min;
+    for(int i=0;i<n-1;i++)
+	{
+        min=i;
+        for(int j=i+1;j<n;j++)
+        {
+            if(a[j]<a[min])
+                min=j;
+            times++;
+        }
+        if(min!=i)
+            swap(a[i],a[min]);
     }
-    else
-      return;
-  }
 }
 
-void heap_sort(int num[],int n)
-{
-  for(int i=n/2;i>=1;i--)
-    adj(num,i,n);
-  for(int i=n;i>=2;i--)
-  {
-    swap(num+1,num+i);
-    adj(num,1,i-1);
-  }
-}
 int main()
 {
-
   int n,num[900000];
   int tot_times;
   cin>>n;
   freopen("/Users/davidparker/desktop/sort.out","w",stdout);
 
-  for(int k=1;k<=10;k++)
+  for(int k=1;k<=1;k++)
   {
     cout<<"##################################"<<endl;
     times=0;
@@ -54,7 +38,8 @@ int main()
     cout<<"____________________"<<endl;
 
     cout<<"+_+"<<clock()<<endl;
-    heap_sort(num,n);
+
+    select_sort(num,n);
     cout<<"+_+"<<clock()<<endl;
 
 
