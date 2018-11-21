@@ -59,7 +59,7 @@ int main()
 
   int tot[7]={1000,5000,10000,50000,100000,500000,900000},a[900000],n;
   double tot_q,tot_s;
-  freopen("/Users/davidparker/desktop/sort.out","w",stdout);
+  freopen("/Users/davidparker/desktop/evaluate.out","w",stdout);
   for(int epo=0;epo<7;epo++)
   {
     tot_q=tot_s=0,n=tot[epo];
