@@ -26,7 +26,7 @@ int main()
   cin>>n;
   freopen("/Users/davidparker/desktop/sort.out","w",stdout);
 
-  for(int k=1;k<=1;k++)
+  for(int k=1;k<=10;k++)
   {
     cout<<"##################################"<<endl;
     times=0;
@@ -37,10 +37,9 @@ int main()
     cout<<endl;
     cout<<"____________________"<<endl;
 
-    cout<<"+_+"<<clock()<<endl;
-
+    clock_t start=clock();
     select_sort(num,n);
-    cout<<"+_+"<<clock()<<endl;
+    cout<<"+_+"<<(clock()-double(start))/CLOCKS_PER_SEC<<"秒"<<endl;
 
 
     for(int i=1;i<=n;i++)
