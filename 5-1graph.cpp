@@ -11,7 +11,7 @@ public:
 };
 class Graph
 {
-	Node*head[100];
+	Node *head[100];
 public:
 	int tot;
 	Graph()
@@ -23,7 +23,7 @@ public:
 	int add(int s,int t,int w);
 	int dist(int s,int e);
 	int del(int s,int e);
-	int first(int s);  //���ص�һ���ٽֽڵ�
+	int first(int s);  //第一个邻接节点
 	int show();
 	int dfs(int r);
 	int bfs(int r);

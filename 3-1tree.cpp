@@ -48,7 +48,6 @@ class Btree
 public:
   Btree(){root=NULL,count=0,dep=0;}
 
-  void load();
   bool build();  //根据模拟树形结构输入建树
   bool build_seq();  //根据遍历输入
 
@@ -61,7 +60,7 @@ public:
 
   int show();   //树形打印
   int show(Node<T>*p);  //显示该指针指向的数据
-  int show_file();
+
 
 
   vector<Node<T>*> search(T dat);   //返回所有值相等的节点的指针
@@ -77,6 +76,7 @@ public:
   int set_dep(int n);
 };
 
+
 int ith(int n)
 {
   if(n<0)
@@ -88,6 +88,31 @@ void space(int t)
 {
   for(int i=0;i<t;i++)
     cout<<" ";
+}
+
+
+template<typename T>
+int Btree<T>::add(T dat)
+{
+  if(count==0)
+  {
+    add_p(NULL,0,dat);
+    return 0;
+  }
+  Node<T>*p=root;
+  Node<T>*t=NULL;
+  while(1)
+  {
+    if(p==NULL)
+      break;
+    t=p;
+    if(dat<p->data)
+      p=p->lr[0];
+    else
+      p=p->lr[1];
+  }
+  add_p(t,dat>t->data,dat);
+  return 0;
 }
 
 template<typename T>
@@ -111,7 +136,7 @@ int Btree<T>::show()
   }
   return 0;
 }
-
+/*
 template<typename T>
 int Btree<T>::show_file()
 {
@@ -138,7 +163,8 @@ int Btree<T>::show_file()
   fclose(stdout);
   return 0;
 }
-
+*/
+/*
 template<typename T>
 void Btree<T>::load()
 {
@@ -149,7 +175,7 @@ void Btree<T>::load()
   cout<<"out"<<endl;
   show();
 }
-
+*/
 template<typename T>
 int Btree<T>::set_dep(int t)
 {
@@ -157,8 +183,7 @@ int Btree<T>::set_dep(int t)
   return 0;
 }
 
-
-
+/*
 template<typename T>
 bool Btree<T>::build()   //返回是否是满二叉树 true---是   false---不是
 {
@@ -185,11 +210,13 @@ bool Btree<T>::build()   //返回是否是满二叉树 true---是   false---不�
   return flag;
 }
 
+*/
 
 /*
 12#45##6##3#7
 1#2345####6#7#8##
 */
+/*
 template<typename T>
 bool Btree<T>::build_seq()
 {
@@ -225,6 +252,7 @@ bool Btree<T>::build_seq()
   set_dep(dep);
   return pow(dep)==count;
 }
+*/
 
 template<typename T>
 Node<T>* Btree<T>::add_p(Node<T>*father,int lrt,T dat)  //0-l 1-r
